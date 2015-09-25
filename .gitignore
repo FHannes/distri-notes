@@ -6,5 +6,5 @@
 *.toc
 
 % BaKoMa TeX Word
-
 *.tex.Backup-*
+*.ddf
