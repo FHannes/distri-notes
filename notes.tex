@@ -1,0 +1,199 @@
+% Samenvatting van het vak Gedistribueerde Systemen
+\documentclass[a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{parskip}
+\usepackage[pdftex]{graphicx}
+\usepackage[dutch]{babel}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{framed}
+\usepackage{varwidth}
+
+\begin{document}
+
+\begin{titlepage}
+    \newpage
+    \thispagestyle{empty}
+    \frenchspacing
+    \hspace{-0.2cm}
+    \includegraphics[height=3.4cm]{assets/sedes}
+    \hspace{0.2cm}
+    \rule{0.5pt}{3.4cm}
+    \hspace{0.2cm}
+    \begin{minipage}[b]{8cm}
+        \Large{Katholieke\newline Universiteit\newline Leuven}\smallskip\newline
+        \large{}\smallskip\newline
+        \textbf{Department of\newline Computer Science}\smallskip
+    \end{minipage}
+    \hspace{\stretch{1}}
+    \vspace*{3.2cm}\vfill
+    \begin{center}
+        \begin{minipage}[t]{\textwidth}
+            \begin{center}
+                \large{\rm{\textbf{\uppercase{Notes}}}}\\
+                \large{\rm{Distributed Systems [H0N08a]}}\\
+                \large{\rm{Gedistribueerde Systemen [H04I4a]}}
+            \end{center}
+        \end{minipage}
+    \end{center}
+    \vfill
+    \hfill\makebox[8.5cm][l]{%
+        \vbox to 7cm{\vfill\noindent
+            {\rm \textbf{Fr\'ed\'eric Hannes}}\\[2mm]
+            {\rm Academic year 2015--2016}
+        }
+    }
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+
+\subsection{Definitions}
+
+A \textbf{distributed system} is a system which consists out of hardware and/or software components, a network which provides a connection between those components and communication to provide coordination of the components by passing messages.
+
+\textbf{Concurrency} can be a major issue for distributed systems as it is very difficult to synchronize events across the various components. One of the reasons for this is the lack of a \textbf{global clock}. As such, time might be different for different components of the system. Another hurdle are \textbf{independent failures} of these system components. In a distributed environment, a system will never completely fail, but each component of the system can fail independently. The system van handle these failures in various ways. Full availability of a distributed system can never be guaranteed.
+
+A \textbf{distributed algorithm} is a collection of cooperating algorithms which communicate through message passing. An example algorithm is mutual exclusion, which prevents different processes from using the same resource simultaneously.
+
+\subsection{Examples}
+
+\subsubsection{Example 1: Internet}
+
+The internet is a vast collection of computer networks. These are (small) local intranets which are connected by backbone machines. ISPs provide connectivity between these networks, as well various services. Services on the internet include the world-wide web, consisting out of webpages, but also email for messaging and file transfer to move files through the networks.
+
+Each local network which connects to the internet has its own security policies and administration. They are connected to the internet through routers. Firewalls are used as a security system by filtering messages passing between networks and machines at the routers.
+
+The internet and its services were constructed to increase the sharing of resources. These resources include files, physical machines such as printers and databases.
+
+\subsubsection{Example 2: Mobile \& ubiquitous computing}
+
+The miniaturization of electrical components and advances in wireless networking have made it possible to create laptops, handhelds devices such as PDAs and mobile phones, wearable computers such as smart watches and smart cards and also embedded devices like washing machines, cars and hi-fi systems.
+
+Most of these systems can be referred to as \textbf{mobile computing} devices. Mobile computing is ubiquitous computing, as the devices can be used anywhere and can communicate with each other. The mobile devices move in and out of intranets, but require transparent access to the home intranet, meaning that the user should be unaware that the device is not on its local intranet and should be able to access the resources on that intranet as if it were local. This form of access to local resource at a remote site is \textbf{location-aware computing}.
+
+Some of the challenges with mobile computing include automatically reconfiguring the host intranet and the mobile device when it enters or leaves this intranet. It also has to cope with limited connectivity. There are also various privacy and security concerns to take into account when a mobile device uses a foreign intranet.
+
+\subsubsection{Example 3: Commercial applications}
+
+There are various commercial applications of distributed systems, each with its own challenges. An example of e-commerce, more specifically home banking, has the challenge of correctly completing transactions. If a user transfers money to another person, they want this to happen just once and correctly. This means that the operation has to be \textbf{idempotent}. If it is performed twice, it should have the same result as if it were only performed once. In the case of the bank, this means that a specific amount shouldn't be transferred by the operation, but rather that the operation should increase the amount of the target account before the operation with a certain value, to achieve a specific new balance. That way, even if the operation is executed twice, the end-result will still be the same.
+
+For healthcare, global access to patient information is a goal which is being worked towards. The idea behind this is that patient information can be shared between hospitals in the same country or even across borders if the patient allows it, as there are privacy concerns involved. Mechanisms must also be in place to give medical professionals the ability to overrule these mechanisms if a patient is incapable of making the decision that this data can be shared.
+
+Audio and video calling is an example for telecommunication, where systems must handle real-time traffic. The data must reach its destination fast enough to allow for smooth, uninterrupted communication.
+
+In financial trading, complex event processing engines which are driven by trading strategies are connected at physical locations close to the stock exchanges, to minimize delays, allowing for faster and more accurate trades. In these markets, it is important that a trade is executed within milliseconds as to ensure that the price at which it is done so, doesn't differ greatly from what was observed or intended when the transaction was initiated.
+
+\subsection{Trends}
+
+\subsubsection{Pervasive networking}
+
+\textbf{Pervasive networking} is the idea of the internet of things, where there is a trend that more and more products are able to communicate in some way with a network. This now includes even tiny sensors which operate at nano scales.
+
+\subsubsection{Increasing mobility}
+
+There's a trend of ever increasing mobility, with a rapidly growing number of mobile devices communicating with networks. This results in increasingly ubiquitous computing. \textit{This topic is handled in the course Capital Selecta Distributed Systems: Applications of Sensor Networks}.
+
+\subsubsection{Multimedia systems}
+
+Multimedia systems are increasingly acting as a distributed system, where the devices are interconnected and are able to function as one large unit. \textit{This topic is handled in specialized courses by the HCI group}.
+
+\subsubsection{Utility computing}
+
+\textbf{Utility computing} refers to a popular trend where computing is handled as a utility service. A person or company generally does not want to spend more on anything, including computing, than it needs to. For a utility, you are only charged for the amount of the service or good which is consumed. Utility computing tries to implement this concept for computing resources. Services which are generally referred to with the buzz word "cloud computing", provided by companies such as Amazon, aim to do this. They can provide computing power for which their customer will only be charged for the amount of computing power/time they consumed. \textit{This topic is handled in this course, but is also extensively reviewed in the source Capital Selecta Distributed Systems: Software-as-a-service}.
+
+\subsection{Types of concurrency}
+
+\subsubsection{Interleaved computation}
+
+\textbf{Interleaved computation} implements concurrency on a single processor. This is not true concurrency, as it can not simultaneously perform two tasks, but it attempts to switch between tasks rapidly, as to create the illusion of performing concurrent tasks.
+
+With this method, a job is performed as the execution of a single program. This is done with cooperating subtasks or threads, using the interleaved execution method. The threads are able to communicate with each other using shared memory. There is a single clock, which means that events can be ordered in a schedule for execution.
+
+\subsubsection{Parallel computing}
+
+\textbf{Parallel computing} implements true concurrency on multiprocessor systems. It executes a job as a single program, consisting out of subtasks or threads. This is true concurrency as the threads can be scheduled on the individual processors and executed simultaneously. Threads will still communicate through shared memory as it all occurs on a single system. This also means that there is a single clock, allowing events to be ordered in a schedule.
+
+\subparagraph{Example} Single Instruction, Multiple Data (SIMD) is an example of parallel programming, where a single program is executed and handles different (partial) datasets concurrently.
+
+\subsubsection{Distributed computing}
+
+A job is the execution of many procedures. It consists out of many cooperating tasks. A single process can have subtasks or treads which use real concurrency. Unlike with interleaved or parallel computing, a distributed system can not make use of a shared memory environment to provide communication between threads. Instead processes communicate using message passing over the network which connects the nodes of the distributed system. Each system has its own clock, this means that there can only be a partial ordering for events in the system, as time is no longer a unique value in the system.
+
+\subsubsection{Parallel vs. Distributed}
+
+There are several key differences between parallel and distributed computing:
+\begin{itemize}
+\item \textbf{Hardware}: Parallel hardware differs greatly from distributed hardware in the way that parallel hardware generally uses identical processors and a regular interconnection structure. Distributed hardware in contrast can consist of various different types of processors and the nodes in a distributed system are interconnected using network. This adds the risk of partial (independent) failure, which can lead to unpredictable results if not handled properly.
+\item \textbf{Granularity}: Parallel computing has a small granularity of tasks. This means that tasks are generally hard to distinguish from each other. On a distributed system, there has to be a clear division of labor, which leads to a large granularity of tasks.
+\item \textbf{Frequency of communication}: Communication happens frequently for parallel computing, where as it does not for distributed computing. The reason for this is that communication channels in a parallel environment are very fast, which keeps any overhead invoked by communicating, very small. In a distributed environment, nodes of the system are usually connected over a network. These networks, though ever increasing in transfer speeds, are not able to match the performance of the on-board or even on-chip communication channels which are used in a parallel environment. As a result, communication in a distributed environment is kept to a minimum.
+\item \textbf{Homogeneity}: In a parallel computing environment, tasks often perform the same function. In a distributed environment, usually tasks will perform different functions. The reasoning behind this is that similar tasks generally require synchronization and communication, which is more difficult in a distributed environment. We say that there is heterogeneity between tasks in a distributed environment.
+\item \textbf{Synchronization}: As a parallel system has a global clock, synchronization can easily be achieved by leveraging the fact that time is always the same throughout the system. In a distributed environment, special routines and communication are required to synchronize events.
+\item \textbf{Security}: We consider a distributed system to be insecure, as the system has to communicate over a network, which is very vulnerable to outside intrusions, compared to a parallel system, where execution of a program is performed on a single machine.
+\item \textbf{Failures}: When a parallel system fails, it fails completely, this is referred to as \textbf{full failure}.  A distributed system will usually not fail entirely, which we refer to as \textbf{independent failure}. These failures can have different causes, but usually either a node in the distributed system will fail, or an entire network segment will become unavailable.
+\end{itemize}
+
+\subsection{Challenges}
+
+\subsubsection{Heterogeneity}
+
+Heterogeneity is present at many levels when working with distributed computing. A distributed system can use different types of networks such as Ethernet or token ring networks. It can also be implemented using different kinds of computer hardware and operating systems. A distributed application might rely on applications which have been written in different programming languages and which have been implemented by different developers. To overcome these hurdles, \textbf{middleware} is used. This is software which is placed in between the platform and the application, which ensures the application can run in an environment with standardized components.
+
+Examples of middleware include the Java RMI (Remote Method Invocation) API, which is used to call methods on remote systems. CORBA (Common Object Request Broker Architecture) is a platform which also allows applications to work with objects on remote systems. Both middleware solutions implement a uniform high level API for remote procedures and methods, remote invocation, remote event notification and distributed transactions.
+
+\subsubsection{Openness}
+
+Open systems enable adding system extensions without disruption or duplication of existing services. This means that when systems are open, they can be called upon by other systems, rather than those systems having to implement the same functionality. This can be achieved by using a uniform communication mechanism to enable distributed programming and by publishing interfaces or using standard interfaces to access shared resources. As a result, these open distributed systems are able to use heterogeneous hardware.
+
+\subsubsection{Security}
+
+A distributed system may get attacked in various ways. It may be attacked to breach confidentiality and privacy, by obtaining data from the system. The integrity of messages passed within the system may be compromised. User authentication may be spoofed by simulating a false identity. An attacker may also gain unauthorized access to resources of the system, such as files or devices like printers. A denial of service attack might cripple availability of the system by overwhelming it with requests.
+
+\subsubsection{Scalability}
+
+Scalability is a major challenge as it is very difficult to scale up a system, whilst retaining the same software. It is important to control the cost of physical resources and the loss of performance in a distributed system. One must also make sure to prevent software resources from running out and to avoid performance bottlenecks.
+
+This can be achieved by replicating and partitioning data, so it can be processed in a distributed environment; as well as by caching of data and using of multiple servers.
+
+\subsubsection{Failure handling}
+
+Partial failures are difficult to handle, but several techniques are available:
+\begin{itemize}
+\item \textbf{Detecting failures}: Detecting failures is an important part of failure handling in general. Mechanisms such as checksums can be used to achieve this.
+\item \textbf{Masking failures}: A system can mask a failure by attempting to continue operating after a failure has occurred. If a message has been sent to a node in a distributed system which has failed, this message may be retransmitted to be handled by a different node instead, if no reply was received.
+\item \textbf{Tolerating failures}: A failure may be tolerated, which means that it is deemed ,acceptable for the failure to occur, if it does not occur too frequently. This may not be possible for some critical system, but can often be seen on websites, when it states that a service is not currently available.
+\item \textbf{Recovery from failures}: A system may recover from a failure. An example of this would be saving the state of execution, which is then restored later on to resume the execution.
+\item \textbf{Redundancy}: Redundancy can be applied to handle failures as well. This si achieved by replicating services. If a service fails, one of the redundant replications can take over, preventing the system from failing.
+\end{itemize}
+
+\subsubsection{Concurrency}
+
+Different clients will often try to access a shared resource simultaneously. This is a problem which can be solved in either of two ways. The access can be restricted to a single client, but this is very inefficient. It is also possible to allow concurrent executions, but this is often difficult to implement. Synchronization tools are needed to achieve this. There are many known techniques, such as semaphores which can be implemented.
+
+\subsubsection{Transparency}
+
+A system is transparent for a feature if that feature is unobservable for the user. This means that the user is unaware of the full extent of the implementation of that feature. In Java RMI for example, an object can be remote, but the software will be unaware of this fact and treat the object as ti would a local object. Another example to consider is a mobile application, such as a banking app. To the user, any action taken in the app appears as if it were done locally, where as in reality, a very large and complex (distributed) system is responsible for processing these actions remotely.
+
+Transparency is possible for many different aspects:
+\begin{itemize}
+\item \textbf{Access}: Access to local and remote resources is identical. The client is not made aware of the difference.
+\item \textbf{Location}: Resources can be accessed without knowledge of their physical or network location. Consider a file service such as Dropbox, where a user can access their files, never knowing where in the world (on what server) exactly they are stored.
+\item \textbf{Concurrency}
+\item \textbf{Replication}
+\item \textbf{Failure}
+\item \textbf{Mobility}: Allows movement of resources, without functionality being affected.
+\item \textbf{Performance}
+\item \textbf{Scaling}
+\end{itemize}
+
+\newpage
+
+\section{Direct Communication}
+
+\subsection{Object Brokers}
+
+\end{document}
+
