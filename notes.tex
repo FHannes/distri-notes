@@ -3,7 +3,7 @@
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{parskip}
 \usepackage[pdftex]{graphicx}
-\usepackage[dutch]{babel}
+\usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{float}
 \usepackage{framed}
@@ -71,7 +71,7 @@ The internet and its services were constructed to increase the sharing of resour
 
 \subsubsection{Example 2: Mobile \& ubiquitous computing}
 
-The miniaturization of electrical components and advances in wireless networking have made it possible to create laptops, handhelds devices such as PDAs and mobile phones, wearable computers such as smart watches and smart cards and also embedded devices like washing machines, cars and hi-fi systems.
+The miniaturization of electrical components and advances in wireless networking have made it possible to create laptops, handheld devices such as PDAs and mobile phones, wearable computers such as smart watches and smart cards and also embedded devices like washing machines, cars and hi-fi systems.
 
 Most of these systems can be referred to as \textbf{mobile computing} devices. Mobile computing is ubiquitous computing, as the devices can be used anywhere and can communicate with each other. The mobile devices move in and out of intranets, but require transparent access to the home intranet, meaning that the user should be unaware that the device is not on its local intranet and should be able to access the resources on that intranet as if it were local. This form of access to local resource at a remote site is \textbf{location-aware computing}.
 
@@ -81,7 +81,7 @@ Some of the challenges with mobile computing include automatically reconfiguring
 
 There are various commercial applications of distributed systems, each with its own challenges. An example of e-commerce, more specifically home banking, has the challenge of correctly completing transactions. If a user transfers money to another person, they want this to happen just once and correctly. This means that the operation has to be \textbf{idempotent}. If it is performed twice, it should have the same result as if it were only performed once. In the case of the bank, this means that a specific amount shouldn't be transferred by the operation, but rather that the operation should increase the amount of the target account before the operation with a certain value, to achieve a specific new balance. That way, even if the operation is executed twice, the end-result will still be the same.
 
-For healthcare, global access to patient information is a goal which is being worked towards. The idea behind this is that patient information can be shared between hospitals in the same country or even across borders if the patient allows it, as there are privacy concerns involved. Mechanisms must also be in place to give medical professionals the ability to overrule these mechanisms if a patient is incapable of making the decision that this data can be shared.
+For health care, global access to patient information is a goal which is being worked towards. The idea behind this is that patient information can be shared between hospitals in the same country or even across borders if the patient allows it, as there are privacy concerns involved. Mechanisms must also be in place to give medical professionals the ability to overrule these mechanisms if a patient is incapable of making the decision that this data can be shared.
 
 Audio and video calling is an example for telecommunication, where systems must handle real-time traffic. The data must reach its destination fast enough to allow for smooth, uninterrupted communication.
 
@@ -192,6 +192,24 @@ Transparency is possible for many different aspects:
 \newpage
 
 \section{Direct Communication}
+
+\subsection{Distribution services}
+
+A \textbf{distribution service} in middleware is part of the larger middleware setting. It shields developers of a distributed application from the environment by providing abstraction layers on top of the OS. This creates a clean interface which hides aspects such as low-level APIs or system specific data structures.
+
+\subsubsection{Data representation}
+
+A problem when working with a heterogenous environment is that different underlying systems may represent program data in different ways. This makes it unclear how this data should be mapped onto a message, to ensure that other systems are able to interpret it correctly. The problem can be resolved by converting the data, which can be done using various approaches.
+
+\begin{itemize}
+\item A specific format for transmission can be agreed upon. Data can be converted from the original format on the source system to the intermediary transmission format and converted to the format of the target system upon receival. All machines in the system which communicate must of course be aware of these format specifications. Examples of this are \textit{Sun XDR} and \textit{COBRA CDR}.
+\item A description of the data can be transmitted alongside the actual data. This metadata allows a receiver to comprehend the format, even if it was not aware of it previously. Some examples include \textit{ASN + BER} and \textit{Java serialized form}, the latter of which is a data format which Java objects can be serialized into.
+\item Another approach is converting the data to an ASCII text format such as XML or JSON.
+\end{itemize}
+
+\textbf{XML} is a markup language defined by the WWW consortium. It tags data items with markup string, which contain metadata. The naming of these tags is chosen by the user, but generally gives some indication regarding the meaning of the value it accompanies.
+
+Converting a collection of data items into a form which is suitable for transmission (or storage) is referred to as \textbf{marshalling}. The disassembly of a message to recreate the collection of data items is called \textbf{unmarshalling}. These operations are usually based off of a specification which determine show they should be performed for a given data type. In Java, these operations are referred to as \textbf{serialization} and \textbf{deserialization} respectively.
 
 \subsection{Object Brokers}
 
