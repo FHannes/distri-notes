@@ -193,6 +193,8 @@ Transparency is possible for many different aspects:
 
 \section{Direct Communication}
 
+Direct communication means that the sender knows the receiver and the receiver has to be online in the same time window.
+
 \subsection{Distribution services}
 
 A \textbf{distribution service} in middleware is part of the larger middleware setting. It shields developers of a distributed application from the environment by providing abstraction layers on top of the OS. This creates a clean interface which hides aspects such as low-level APIs or system specific data structures.
@@ -210,6 +212,17 @@ A problem when working with a heterogenous environment is that different underly
 \textbf{XML} is a markup language defined by the WWW consortium. It tags data items with markup strings, which contain metadata. The naming of these tags is chosen by the user, but generally gives some indication regarding the meaning of the value it accompanies.
 
 Converting a collection of data items into a form which is suitable for transmission (or storage) is referred to as \textbf{marshalling}. The disassembly of a message to recreate the collection of data items is called \textbf{unmarshalling}. These operations are usually based off of a specification which determine show they should be performed for a given data type. In Java, these operations are referred to as \textbf{serialization} and \textbf{deserialization} respectively.
+
+\subsubsection{Message passing}
+
+To implement the basic functionality of message passing, 2 methods are required. One to \textbf{send} a given message to a receiver at a specific destination (and port), as well as a method to \textbf{receive} a message on a port.
+
+\subparagraph{Semantics} There's a different between synchronous and asynchronous communication.
+
+\begin{itemize}
+\item \textbf{Synchronous} or blocking communication waits during the communication. When the send method is called, the sender will wait until the receiver has received the message. When the receive method is called, the receiver will wait until a message is received. It is referred to as blocking communication because the thread which calls those methods will be blocked, not able to execute other instructions, until the method returns.
+\item \textbf{Asynchronous} or non-blocking communication does not wait during communication. When the send method is called, the sender will not wait for a notification that the message has been received. When the receive method is called, the receiver will either announce its willingness to accept a message or check if a message has arrived. These messages will generally be buffered until the receiver checks if a message has been received.
+\end{itemize}
 
 \subsection{Object Brokers}
 
