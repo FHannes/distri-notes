@@ -164,7 +164,7 @@ Partial failures are difficult to handle, but several techniques are available:
 \begin{itemize}
 \item \textbf{Detecting failures}: Detecting failures is an important part of failure handling in general. Mechanisms such as checksums can be used to achieve this.
 \item \textbf{Masking failures}: A system can mask a failure by attempting to continue operating after a failure has occurred. If a message has been sent to a node in a distributed system which has failed, this message may be retransmitted to be handled by a different node instead, if no reply was received.
-\item \textbf{Tolerating failures}: A failure may be tolerated, which means that it is deemed ,acceptable for the failure to occur, if it does not occur too frequently. This may not be possible for some critical system, but can often be seen on websites, when it states that a service is not currently available.
+\item \textbf{Tolerating failures}: A failure may be tolerated, which means that it is deemed acceptable for the failure to occur, if it does not occur too frequently. This may not be possible for some critical system, but can often be seen on websites, when it states that a service is not currently available.
 \item \textbf{Recovery from failures}: A system may recover from a failure. An example of this would be saving the state of execution, which is then restored later on to resume the execution.
 \item \textbf{Redundancy}: Redundancy can be applied to handle failures as well. This si achieved by replicating services. If a service fails, one of the redundant replications can take over, preventing the system from failing.
 \end{itemize}
