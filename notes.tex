@@ -8,6 +8,12 @@
 \usepackage{float}
 \usepackage{framed}
 \usepackage{varwidth}
+\usepackage{titlesec}
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+\newcommand{\subsubsubsection}[1]{\paragraph{#1}\mbox{}\\}
 
 \begin{document}
 
@@ -215,14 +221,52 @@ Converting a collection of data items into a form which is suitable for transmis
 
 \subsubsection{Message passing}
 
-To implement the basic functionality of message passing, 2 methods are required. One to \textbf{send} a given message to a receiver at a specific destination (and port), as well as a method to \textbf{receive} a message on a port.
+To implement the basic functionality of message passing, 2 methods are required. One to \textbf{send} a given message to a receiver at a specific destination (such as a port), as well as a method to \textbf{receive} a message on a port.
 
-\subparagraph{Semantics} There's a different between synchronous and asynchronous communication.
+\subsubsubsection{Synchronous vs. asynchronous}
+
+There's a different between synchronous and asynchronous communication.
 
 \begin{itemize}
 \item \textbf{Synchronous} or blocking communication waits during the communication. When the send method is called, the sender will wait until the receiver has received the message. When the receive method is called, the receiver will wait until a message is received. It is referred to as blocking communication because the thread which calls those methods will be blocked, not able to execute other instructions, until the method returns.
 \item \textbf{Asynchronous} or non-blocking communication does not wait during communication. When the send method is called, the sender will not wait for a notification that the message has been received. When the receive method is called, the receiver will either announce its willingness to accept a message or check if a message has arrived. These messages will generally be buffered until the receiver checks if a message has been received.
 \end{itemize}
+
+Note that it is not imperative for a system to use synchronous or asynchronous communication for both send and receive methods, it can very well use a combination. E.g.: The Mach programming language uses an asynchronous send method, but a synchronous receive method.
+
+Some languages may also be capable of using both synchronous and asynchronous communication, if libraries are available to support them.
+
+\subsubsubsection{Message destination}
+
+A \textbf{message destination} is a communication identifier, which can be used to determine where to send messages. These identifiers are by preference not dependent on a location. There are process, port and mailbox identifiers.
+
+\begin{itemize}
+\item A \textbf{process} has a single entry point per process for all messages, the process must then handle the message internally, depending on the purpose of the message.
+\item A \textbf{port} is listened on by a single receiver, but can be communicated to by many senders. It may have a message queue, which is often the case for asynchronous communication. Here the message is buffered until it is requested by the application, which is not aware of when exactly the message arrives. A process can also have many ports, this also makes it possible to separate some of the message flow before processing inside of the application.
+\item A \textbf{mailbox} can have many receivers. A message is sent to a mailbox and depending on the message's destination parameters, can be distributed to various receivers. Mailboxes generally also queue messages until they are retrieved.
+\end{itemize}
+
+\subsubsubsection{Reliability}
+
+When transporting messages, various failures can occur. Some include corruption, duplication, omission (loss) or loss of ordering. All of these are \textbf{communication failures}. Another possibility is that the receiver fails and is not there to receive the messages.
+
+Communication is considered to be reliable when messages are delivered uncorrupted, in order, without duplicates. A pitfall here is that a reasonable number of packets may be dropped or lost, which has to be handled to ensure reliability. It is therefore often not possible to guarantee perfectly reliable communication.
+
+There are three important aspects to implementing reliable communication.
+
+\begin{itemize}
+\item Avoiding corruption by including some sort of checksum in the message.
+\item Avoiding ordering mistakes as well as duplicates by including a sequential message number in each message.
+\item Avoiding omission (loss of messages) by having the receiver reply with an acknowledgement when it receives a message and having the sender retransmit if it times out on waiting for that acknowledgement.
+\end{itemize}
+
+It is important to note that it is hard or sometimes impossible to distinguish between process failure and communication failure when the sender received no acknowledgement.
+
+\subsubsubsection{Case study: UDP/TCP}
+
+When communicating using the UDP (\textbf{User Datagram Protocol}) or TCP (\textbf{Transmission Control Protocol}) protocols, sockets are used to communicate. A socket is a virtual construct which is bound to a port (and IP address). That port can then be used by the socket to connect with other machines and communicate with them. The destination port is usually agreed upon beforehand, as a client has to know where to send messages before it does. The port a socket binds to on the client itself is usually chosen at random. When the connection is initiated, the server will be made aware of the port that was selected by the client to establish communications.
+
+\subparagraph*{UDP} The UDP protocol sends messages with a restricted packet size. Messages with a larger size are truncated, which means they are cut off and sent in parts. Usually synchronization happens with a non-block send and blocking receive method. Timeouts on the receive operation can be set by the user. These timeouts determine how long the receive method will wait for an incoming message. An UDP socket can receive messages from any remove IP and port. Unlike TCP, UDP does not implement any mechanisms to ensure reliability. It should therefore not be used for services where loss of data during communication is unacceptable. Packets could be lost, received out of order or duplicated and it is impossible to verify message corruption.
 
 \subsection{Object Brokers}
 
