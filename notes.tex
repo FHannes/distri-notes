@@ -9,6 +9,22 @@
 \usepackage{framed}
 \usepackage{varwidth}
 \usepackage{titlesec}
+\usepackage{varwidth}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+
+\lstset{
+    language=Java,
+    basicstyle=\small\ttfamily,
+    keywordstyle=\bf\ttfamily\color[rgb]{0,.3,.7},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle={\color[rgb]{0.75,0.49,0.07}},
+    numberstyle=\small\ttfamily\color[rgb]{0.7,0.7,0.7},
+    breaklines=true,
+    frame=leftline
+}
+\lstMakeShortInline[columns=fixed]|
 
 \setcounter{secnumdepth}{4}
 \setcounter{tocdepth}{4}
@@ -269,6 +285,122 @@ When communicating using the UDP (\textbf{User Datagram Protocol}) or TCP (\text
 \subparagraph*{UDP} The UDP protocol sends messages with a restricted packet size. Messages with a larger size are truncated, which means they are cut off and sent in parts. Usually synchronization happens with a non-block send and blocking receive method. Timeouts on the receive operation can be set by the user. These timeouts determine how long the receive method will wait for an incoming message. An UDP socket can receive messages from any remove IP and port. Unlike TCP, UDP does not implement any mechanisms to ensure reliability. It should therefore not be used for services where loss of data during communication is unacceptable. Packets could be lost, received out of order or duplicated and it is impossible to verify message corruption.
 
 \subsection{Object Brokers}
+
+\newpage
+
+\section{Practical Information}
+
+\subsection{Java RMI}
+
+An application using Java RMI consists out of three essential components.
+
+\begin{enumerate}
+\item The \textbf{rmiregistry}, which is the name server that keeps track of all registered server objects and their name.
+\item The \textbf{server application}, which implements the back-end logic of the system.
+\item The \textbf{client application}, which implements the front-end logic of the system and uses RMI to communicate with the server.
+\end{enumerate}
+
+All RMI specific classes can be found in the |java.rmi| package.
+
+\subsubsection{Server Basics}
+
+To set up a server with Java RMI, you have to provide provide an interface for every object the client has to be able to use remotely. These interfaces must...
+
+\begin{itemize}
+\item ...extend the |Remote| interface.
+\item ...implement each method the client needs access to.
+\item ...have each method throw |RemoteException|.
+\item ...only use datatypes which can be serialized or other interfaces which subclass |java.rmi.Remote|.
+\end{itemize}
+
+The classes which implement the remote interfaces must...
+
+\begin{itemize}
+\item ...extend the |UnicastRemoteObject| class.
+\item ...call |super()| in their constructor.
+\item ...have their constructor throw |RemoteException|.
+\end{itemize}
+
+The server must connect to the rmiregistry name service and register any object which the client must be able to \textbf{access by name}! Not every remote object must be registered! Objects which can be accessed by reference, when they are passed through methods, do not have to be registered.
+
+The registry is accessed by URI, defined as {\small\ttfamily rmi://[host]:[port]/[name]}, where |name| is the name of the object you are registering. Registration is achieved by calling |Naming.bind(uri, object)|.
+
+\subsubsection{Client Basics}
+
+The client application must connect to the rmiregistry service to retrieve interfaces to named object instances. The connection is established by calling |LocateRegistry.getRegistry(host, port)|, which returns a |Registry| instance. An interface to a remote object is retrieved by calling |lookup(name)| on the |Registry| object returned by the |LocateRegistry.getRegistry()| method. This object can be cast to the |Remote| interface that was implemented for the specific object.
+
+\subsubsection{rmiregistry}
+
+The rmiregistry service has to be started before the server and client are. It must be started in the root of the classpath of the application, or it has to be provided a location to look for the |Remote| interface classes using the {\small\ttfamily -J-Djava.rmi.server.codebase} parameter, with the path syntax {\small\ttfamily file://[path]} for a jar file or a folder with class files. (A folder name has to end with a path delimiter). A port number is specified as an argument as well. Running in the classpath root can for example be achieved by simply calling {\small\ttfamily rmiregistry 5000} to run on port 5000.
+
+\subsubsection{Example}
+
+A simple hello world example with a client and server. The rmiregistry service is ran on port 5000.
+
+\begin{lstlisting}
+public interface RemoteHello extends Remote {
+
+    String getHello() throws RemoteException;
+
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+public class HelloServer extends UnicastRemoteObject implements RemoteHello {
+
+    private String hello;
+
+    public HelloServer(String hello) throws RemoteException {
+        super();
+        this.hello = hello;
+    }
+
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException, MalformedURLException {
+        HelloServer server = new HelloServer("Hello World!");
+        Naming.bind("rmi://localhost:5000/hello", server);
+    }
+
+    @Override
+    public String getHello() throws RemoteException {
+        return hello;
+    }
+
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+public class HelloClient {
+
+    private Registry registry;
+    private RemoteHello hello;
+
+    public HelloClient() throws RemoteException, NotBoundException {
+        registry = LocateRegistry.getRegistry("localhost", 5000);
+        hello = (RemoteHello) registry.lookup("hello");
+    }
+
+    public void print() throws RemoteException {
+        System.out.println(hello.getHello());
+    }
+
+    public static void main(String[] args) throws RemoteException, NotBoundException {
+        new HelloClient().print();
+    }
+
+}
+\end{lstlisting}
+
+\subsubsection{Notes}
+
+What follows is a list of important notes, pitfalls and FAQs.
+
+\begin{itemize}
+\item Collections such as |List| and |Set| can be serialized and as such, can be used by |Remote| interfaces as arguments or return values for methods.
+\item The |Naming.bind()| method will throw an exception when the name is already in use. |Naming.rebind| can create or overwrite an existing binding.
+\item When using an external rmiregistry service, the service will retain bindings from a previous run of your server, so it must be restarted when the server is restarted.
+\item As mentioned previously, only objects which must be accessed by name have to be registered. It can be interesting to implement a single API object which can then return other remote objects by reference.
+\item When the server receives an object reference from the client as a |Remote| interface, it can not be cast back to the original object. The server must either use the interface as well, or keep a mapping of every object and its reference.
+\end{itemize}
 
 \end{document}
 

@@ -10,4 +10,4 @@ ${OUTPUT_NAME}.pdf:
 	mv ${INPUT_NAME}.pdf ${OUTPUT_NAME}.pdf
 
 clean:
-	rm *.pdf *.aux *.log *.toc
+	rm *.pdf *.aux *.log *.toc *.fls *.fdb_latexmk

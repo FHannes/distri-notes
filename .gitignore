@@ -4,6 +4,8 @@
 *.pdf
 *.synctex.gz
 *.toc
+*.fls
+*.fdb_latexmk
 
 % BaKoMa TeX Word
 *.tex.Backup-*
