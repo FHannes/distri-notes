@@ -295,7 +295,7 @@ When communicating using the UDP (\textbf{User Datagram Protocol}) or TCP (\text
 An application using Java RMI consists out of three essential components.
 
 \begin{enumerate}
-\item The \textbf{rmiregistry}, which is the name server that keeps track of all registered server objects and their name.
+\item The \textbf{rmiregistry}, which is the name server that keeps track of all registered server objects and their name. This can also be part of the server application, but is often ran as a separate service.
 \item The \textbf{server application}, which implements the back-end logic of the system.
 \item The \textbf{client application}, which implements the front-end logic of the system and uses RMI to communicate with the server.
 \end{enumerate}
@@ -397,7 +397,7 @@ What follows is a list of important notes, pitfalls and FAQs.
 \begin{itemize}
 \item Collections such as |List| and |Set| can be serialized and as such, can be used by |Remote| interfaces as arguments or return values for methods.
 \item The |Naming.bind()| method will throw an exception when the name is already in use. |Naming.rebind| can create or overwrite an existing binding.
-\item When using an external rmiregistry service, the service will retain bindings from a previous run of your server, so it must be restarted when the server is restarted.
+\item When using an external rmiregistry service, the service will retain bindings from a previous run of your server, so it must be restarted when the server is restarted. Note that external does not necessarily refer to a service running on an external host, but the rmiregistry running as an individual service, not being part of the server application, which can be done using the |LocateRegistry.createRegistry()| method.
 \item As mentioned previously, only objects which must be accessed by name have to be registered. It can be interesting to implement a single API object which can then return other remote objects by reference.
 \item When the server receives an object reference from the client as a |Remote| interface, it can not be cast back to the original object. The server must either use the interface as well, or keep a mapping of every object and its reference.
 \end{itemize}
