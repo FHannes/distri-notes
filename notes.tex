@@ -390,6 +390,10 @@ public class HelloClient {
 }
 \end{lstlisting}
 
+\subsubsection{Exceptions}
+
+The RMI system implements exceptions using the |RemoteException| class. When the server throws an exception, this can be forwarded to the client directly by catching it on the server and throwing a new exception as |new RemoteException("message", originalException)|. The original exception can also be hidden from the client by just passing a message string to the |RemoteException| constructor.
+
 \subsubsection{Notes}
 
 What follows is a list of important notes, pitfalls and FAQs.
