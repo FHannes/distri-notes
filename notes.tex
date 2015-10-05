@@ -310,7 +310,7 @@ To set up a server with Java RMI, you have to provide provide an interface for e
 \item ...extend the |Remote| interface.
 \item ...implement each method the client needs access to.
 \item ...have each method throw |RemoteException|.
-\item ...only use datatypes which can be serialized or other interfaces which subclass |java.rmi.Remote|.
+\item ...only use datatypes which can be serialized or other interfaces which subclass |Remote|.
 \end{itemize}
 
 The classes which implement the remote interfaces must...
