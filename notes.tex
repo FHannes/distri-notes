@@ -284,6 +284,20 @@ When communicating using the UDP (\textbf{User Datagram Protocol}) or TCP (\text
 
 \subparagraph*{UDP} The UDP protocol sends messages with a restricted packet size. Messages with a larger size are truncated, which means they are cut off and sent in parts. Usually synchronization happens with a non-block send and blocking receive method. Timeouts on the receive operation can be set by the user. These timeouts determine how long the receive method will wait for an incoming message. An UDP socket can receive messages from any remove IP and port. Unlike TCP, UDP does not implement any mechanisms to ensure reliability. It should therefore not be used for services where loss of data during communication is unacceptable. Packets could be lost, received out of order or duplicated and it is impossible to verify message corruption.
 
+\subparagraph*{TCP} Unlike the UDP protocol, the TCP protocol uses stream communication as opposed to message passing. It creates a communication channel through sockets upon connecting, which can be written to or read from. The channel can be closed when communication stops. Because TCP uses a stream, there's no boundary between the data of individual messages; the TCP protocol just transmits raw bits/bytes. It is read as a sequence of bytes. It is up to the software to implement a messaging system. There's a buffer on the sender and receiver side, which buffers data that is queued to be transmitted and data which has been received. These buffers are accessed when the sender writes data or when the receiver reads it.
+
+Usually synchronization for TCP occurs by using a non-blocking send method and a blocking receive method, though this is not always the case and there is an exception for flow control, when the sending or receiving buffers are full. Setting up a connection is done using a handshake protocol. The client sends a request to establish communications to the server port, upon which the server can accept or reject this request. When accepting a request, the server typically creates a new thread to handle communication with the specific client, but some servers also use a working system and queue clients until a worker process is available to handle them.
+
+TCP offers a great advantage over UDP for many applications in that it offers a reliable connection, with the exception of connections which are broken. It ensures that packets arrive without corruption in the correct order.
+
+In contrast to UDP, TCP does have some overhead. The buffering system it employs causes overhead, as well as the handshake protocol used to establish connections. The latter is particularly noticeable if you are only connecting to send a single message, where the handshake protocol adds another two messages to the communications. Another source of overhead is found in assurance of reliability, where TCP ensures that the connection is stable and all data reaches its destination correctly, adding things such as checksums, retransmission of packets and acknowledgement packets.
+
+\subparagraph*{Conclusion}
+
+UDP and TCP are general purpose communication protocols which only offer low level operations such as setting up communications and transferring unstructured data. They are implemented efficiently and offer the building blocks for more complex interactions which have to be implemented by the software.
+
+\subsubsection{Request-reply protocols}
+
 \subsection{Object Brokers}
 
 \newpage
