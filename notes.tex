@@ -244,11 +244,11 @@ To implement the basic functionality of message passing, 2 methods are required.
 There's a different between synchronous and asynchronous communication.
 
 \begin{itemize}
-\item \textbf{Synchronous} or blocking communication waits during the communication. When the send method is called, the sender will wait until the receiver has received the message. When the receive method is called, the receiver will wait until a message is received. It is referred to as blocking communication because the thread which calls those methods will be blocked, not able to execute other instructions, until the method returns.
-\item \textbf{Asynchronous} or non-blocking communication does not wait during communication. When the send method is called, the sender will not wait for a notification that the message has been received. When the receive method is called, the receiver will either announce its willingness to accept a message or check if a message has arrived. These messages will generally be buffered until the receiver checks if a message has been received.
+\item \textbf{Synchronous} or blocking communication waits during the communication. When the |send| method is called, the sender will wait until the receiver has received the message. When the |receive| method is called, the receiver will wait until a message is received. It is referred to as blocking communication because the thread which calls those methods will be blocked, not able to execute other instructions, until the method returns.
+\item \textbf{Asynchronous} or non-blocking communication does not wait during communication. When the |send| method is called, the sender will not wait for a notification that the message has been received. When the |receive| method is called, the receiver will either announce its willingness to accept a message or check if a message has arrived. These messages will generally be buffered until the receiver checks if a message has been received.
 \end{itemize}
 
-Note that it is not imperative for a system to use synchronous or asynchronous communication for both send and receive methods, it can very well use a combination. E.g.: The Mach programming language uses an asynchronous send method, but a synchronous receive method.
+Note that it is not imperative for a system to use synchronous or asynchronous communication for both |send| and |receive| methods, it can very well use a combination. E.g.: The Mach programming language uses an asynchronous |send| method, but a synchronous |receive| method.
 
 Some languages may also be capable of using both synchronous and asynchronous communication, if libraries are available to support them.
 
@@ -282,11 +282,11 @@ It is important to note that it is hard or sometimes impossible to distinguish b
 
 When communicating using the UDP (\textbf{User Datagram Protocol}) or TCP (\textbf{Transmission Control Protocol}) protocols, sockets are used to communicate. A socket is a virtual construct which is bound to a port (and IP address). That port can then be used by the socket to connect with other machines and communicate with them. The destination port is usually agreed upon beforehand, as a client has to know where to send messages before it does. The port a socket binds to on the client itself is usually chosen at random. When the connection is initiated, the server will be made aware of the port that was selected by the client to establish communications.
 
-\subparagraph*{UDP} The UDP protocol sends messages with a restricted packet size. Messages with a larger size are truncated, which means they are cut off and sent in parts. Usually synchronization happens with a non-block send and blocking receive method. Timeouts on the receive operation can be set by the user. These timeouts determine how long the receive method will wait for an incoming message. An UDP socket can receive messages from any remove IP and port. Unlike TCP, UDP does not implement any mechanisms to ensure reliability. It should therefore not be used for services where loss of data during communication is unacceptable. Packets could be lost, received out of order or duplicated and it is impossible to verify message corruption.
+\subparagraph*{UDP} The UDP protocol sends messages with a restricted packet size. Messages with a larger size are truncated, which means they are cut off and sent in parts. Usually synchronization happens with a non-block send and blocking |receive| method. Timeouts on the receive operation can be set by the user. These timeouts determine how long the |receive| method will wait for an incoming message. An UDP socket can receive messages from any remove IP and port. Unlike TCP, UDP does not implement any mechanisms to ensure reliability. It should therefore not be used for services where loss of data during communication is unacceptable. Packets could be lost, received out of order or duplicated and it is impossible to verify message corruption.
 
 \subparagraph*{TCP} Unlike the UDP protocol, the TCP protocol uses stream communication as opposed to message passing. It creates a communication channel through sockets upon connecting, which can be written to or read from. The channel can be closed when communication stops. Because TCP uses a stream, there's no boundary between the data of individual messages; the TCP protocol just transmits raw bits/bytes. It is read as a sequence of bytes. It is up to the software to implement a messaging system. There's a buffer on the sender and receiver side, which buffers data that is queued to be transmitted and data which has been received. These buffers are accessed when the sender writes data or when the receiver reads it.
 
-Usually synchronization for TCP occurs by using a non-blocking send method and a blocking receive method, though this is not always the case and there is an exception for flow control, when the sending or receiving buffers are full. Setting up a connection is done using a handshake protocol. The client sends a request to establish communications to the server port, upon which the server can accept or reject this request. When accepting a request, the server typically creates a new thread to handle communication with the specific client, but some servers also use a working system and queue clients until a worker process is available to handle them.
+Usually synchronization for TCP occurs by using a non-blocking |send| method and a blocking |receive| method, though this is not always the case and there is an exception for flow control, when the sending or receiving buffers are full. Setting up a connection is done using a handshake protocol. The client sends a request to establish communications to the server port, upon which the server can accept or reject this request. When accepting a request, the server typically creates a new thread to handle communication with the specific client, but some servers also use a working system and queue clients until a worker process is available to handle them.
 
 TCP offers a great advantage over UDP for many applications in that it offers a reliable connection, with the exception of connections which are broken. It ensures that packets arrive without corruption in the correct order.
 
@@ -302,7 +302,7 @@ Request-reply protocols refer to a pattern imposed on an underlying messaging sy
 
 Because of the way request-reply protocols work, the reliability that comes with the TCP protocol causes a lot of overhead, as acknowledgements are redundant, the size of data packets is limited and communication occurs sporadically. This means that the TCP connection concept and streams or flow control are not needed. UDP can be used instead to reduce the overhead and improve efficiency, but UDP does have issues with reliability and may require requests or replies to be resent.
 
-\subparagraph*{Case study: HTTP}
+\subsubsubsection{Case study: HTTP}
 
 The original HTTP protocol had the server and clients communicate with a simple sequence of events. First a connection would be opened, the client would send a request and the server would reply. After that had occurred, the connection was closed. With the introduction of the HTTP 1.1 protocol, persistent connections using TCP were added to handle multiple requests from the same server.
 
@@ -310,9 +310,29 @@ The original HTTP protocol had the server and clients communicate with a simple 
 
 Request-reply protocols are coupled with time. Clients are constantly waiting for replies. They do this when establishing connections, when they transfer data and when they are closing the connections. As a result, the server they connect with must serve replies correctly and at a fast enough rate, to prevent clients from hanging during their wait cycle because the reply does not arrive or does not arrive fast enough. This coupling with time can be addressed at the client or server side by implementing things such as buffers and time-outs. It can however also be handled at the protocol level by using message queues.
 
-\subparagraph*{Message queue}
+A \textbf{message queue} is usually implemented on the server side. One or more clients connected to the server will send it messages. The server will then sequentially handle these. The server can employ one or more worker processes to handle the messages by removing them from the queue when they are available. Multiple servers can also be deployed (for decoupling in space), but this requires the addition of a message broker and leads to a \textbf{publish & subscribe messaging system}. Here clients can publish their (typed) messages to the broker. Servers can register with the broker to subscribe to a type of client (messages) they can handle. The broker will then distribute messages from the clients to the appropriate servers.
 
-\subsection{Object Brokers}
+\subsubsection{Remote procedure calls}
+
+In a traditional application, there is a main program which calls procedures. In a distributed system, the same effect can be achieved by grouping the procedures into servers and having the main programs act as clients. When a client invokes a procedure on a server remotely, it will act like a conventional procedure call. This is achieved by \textbf{RPC middleware} thought he use of \textbf{stubs}. These stubs are interfaces which represent procedures on the server as they would appear in a local environment, allowing the client to call them and essentially be unaware of how they are implemented, which in this case would be using a messaging system to call them remotely.
+
+To understand remote procedure calls, it is important to note that there is a stub at the client side and a stub at the server side. The client stub allows the client to call procedures transparently, where as the stub on the server side communicates client requests back and forth between the actual implementation on the server. An RPC invocation sequence may look as follows:
+
+\begin{enumerate}
+\item The application calls a procedure on the client stub.
+\item The client stubs marshalls the parameters of the calls and passes it to the module used to communicate with the server.
+\item The communication module in the clients transmits the message to the server.
+\item The communication module in the server receives the message and relays it to the dispatcher service.
+\item The dispatcher service sends the message to the appropriate server stub.
+\item The server stub unmarshalls the parameters for the procedure call and invokes the correct procedure on the server.
+\item The procedure on the server returns its result to the server stub.
+\item The server stub marshalls the answer and passes it to the communication module.
+\item The communication module in the server transmits the message to the client.
+\item The communication module in the client relays the message to the client stub.
+\item The client stub returns the result through the method interface called by the application.
+\end{enumerate}
+
+In this system, the code of both the client and the server are completely independent from the actual communication system. Remote procedure invocation is transparent to the client, makign it unaware that the method is executed remotely. An \textbf{Interface Definition Language (IDL)} is used as a language independent of that used for the client and server to generate the stubs, allowing for clients and servers written in different languages to work compatibly.
 
 \newpage
 
