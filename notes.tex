@@ -298,6 +298,20 @@ UDP and TCP are general purpose communication protocols which only offer low lev
 
 \subsubsection{Request-reply protocols}
 
+Request-reply protocols refer to a pattern imposed on an underlying messaging system to allow communication between a client/server setting. A client will send a request to a client application using a |doOperation| method, which will then wait for a reply and return the answer when it is received. The server can call a |getRequest| method to (wait for and) receive a message and then use a |sendReply| method to send a reply back to the client after the request has been executed. In this system, acknowledgement messages are redundant as replies are used instead, a connection structure is not nessecary and there is no need for flow control.
+
+Because of the way request-reply protocols work, the reliability that comes with the TCP protocol causes a lot of overhead, as acknowledgements are redundant, the size of data packets is limited and communication occurs sporadically. This means that the TCP connection concept and streams or flow control are not needed. UDP can be used instead to reduce the overhead and improve efficiency, but UDP does have issues with reliability and may require requests or replies to be resent.
+
+\subparagraph*{Case study: HTTP}
+
+The original HTTP protocol had the server and clients communicate with a simple sequence of events. First a connection would be opened, the client would send a request and the server would reply. After that had occurred, the connection was closed. With the introduction of the HTTP 1.1 protocol, persistent connections using TCP were added to handle multiple requests from the same server.
+
+\subsubsection{Asynchronous communication}
+
+Request-reply protocols are coupled with time. Clients are constantly waiting for replies. They do this when establishing connections, when they transfer data and when they are closing the connections. As a result, the server they connect with must serve replies correctly and at a fast enough rate, to prevent clients from hanging during their wait cycle because the reply does not arrive or does not arrive fast enough. This coupling with time can be addressed at the client or server side by implementing things such as buffers and time-outs. It can however also be handled at the protocol level by using message queues.
+
+\subparagraph*{Message queue}
+
 \subsection{Object Brokers}
 
 \newpage
