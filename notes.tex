@@ -13,6 +13,7 @@
 \usepackage{listings}
 \usepackage{color}
 \usepackage{textcomp}
+\usepackage{qrcode}
 
 \lstset{
     language=Java,
@@ -43,7 +44,7 @@
     \rule{0.5pt}{3.4cm}
     \hspace{0.2cm}
     \begin{minipage}[b]{8cm}
-        \Large{Katholieke\newline Universiteit\newline Leuven}\smallskip\newline
+        \large{Katholieke\newline Universiteit\newline Leuven}\smallskip\newline
         \large{}\smallskip\newline
         \textbf{Department of\newline Computer Science}\smallskip
     \end{minipage}
@@ -58,13 +59,19 @@
             \end{center}
         \end{minipage}
     \end{center}
-    \vfill
-    \hfill\makebox[8.5cm][l]{%
-        \vbox to 7cm{\vfill\noindent
-            {\rm \textbf{Fr\'ed\'eric Hannes}}\\[2mm]
-            {\rm Academic year 2015--2016}
-        }
-    }
+    \vfill\vspace*{5cm}
+    \begin{minipage}[t]{0.2\textwidth}
+        \begin{center}
+            @GitHub\\
+            \qrcode{https://github.com/FHannes/distri-notes}\\
+            {\tt \#\input{rev}}
+        \end{center}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.3\textwidth}
+        \vfill\noindent \\[5mm]
+        {\rm \textbf{Fr\'ed\'eric Hannes}}\\[2mm]
+        {\rm Academic year 2015--2016}
+    \end{minipage}
 \end{titlepage}
 
 \tableofcontents
@@ -347,7 +354,7 @@ In this system, the code of both the client and the server are completely indepe
 \item \textbf{At-most-once}: An RPC call returns either the result, ensuring the call executed just once, or an error that indicates there was no result and either it execute once or not at all. This can be achieved by retransmitting the reply from the server and filtering duplicate requests.
 \item \textbf{Exactly-once}: An RPC call returns the correct result, ensuring that it was executed at least once and only once. This is very difficult, if not impossible to achieve as failures are always possible.
 \end{enumerate}
-\item Transparency is an important concept in RPC, one usually aims to make remote calls as similar to local calls as possible. RPC is however more vulnerable to failure, which should not be hidden. Some other difficulties include that calling instructions has to happen very differently and that there is no shared memory between the client and server. There has to be a balance between programming convenience and true transparency.
+\item Transparency is an important concept in RPC; one usually aims to make remote calls as similar to local calls as possible. RPC is however more vulnerable to failure, which should not be hidden. Some other difficulties include that calling instructions has to happen very differently and that there is no shared memory between the client and server. There has to be a balance between programming convenience and true transparency.
 \end{itemize}
 
 \newpage

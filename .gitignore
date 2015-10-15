@@ -1,9 +1,13 @@
+rev
+
 % LaTeX
 *.aux
 *.log
 *.pdf
 *.synctex.gz
 *.toc
+
+% Latexmk
 *.fls
 *.fdb_latexmk
 
