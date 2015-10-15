@@ -355,7 +355,17 @@ In this system, the code of both the client and the server are completely indepe
 \item \textbf{Exactly-once}: An RPC call returns the correct result, ensuring that it was executed at least once and only once. This is very difficult, if not impossible to achieve as failures are always possible.
 \end{enumerate}
 \item Transparency is an important concept in RPC; one usually aims to make remote calls as similar to local calls as possible. RPC is however more vulnerable to failure, which should not be hidden. Some other difficulties include that calling instructions has to happen very differently and that there is no shared memory between the client and server. There has to be a balance between programming convenience and true transparency.
+\item The interface compiler is responsible for generating the client stub procedure, server stub procedure, generating code for marshalling and unmarshalling of the arguments for each type and generating the header for the server procedure. A binder interface is provided to link a client to a server at execution time. A server can register itself to receive RPC calls with the binder using a |register| method and a client can look up a service using a |lookup| mehod. The binder itself is either located at a well known host address, the OS could be responsible for the bindings or the client could broadcast a message to contact a binder on the network.
+\item \textbf{Asynchronous RPC} can be used as an alternative to synchronous RPC when the system has to handle many requests for amsll amounts of information that requires limited processing or when parallel requests have to be sent to several servers. this is useful because servers waste a lot of time idling in between RPC calls to wait for a new call. This could further be optimized by buffering requests at the client until a server is available to handle it, or by having a client resume execution if no reply is needed for an RPC call.
+\begin{itemize}
+\item \textbf{Call streams} can be implemented as a connection oriented RPC system that mixes synchronous and asynchronous calls. A stream allows the system to preserve the order of the calls.
+\item \textbf{Promises} allow clients to resume other executions and retrieve the results of RPC calls later. A promise is created at the time of the call and stored the results of the call once received. A client can invoke methods on a promise object, to |get| a result, |await| a result or check if a result is available. Commonly used altenative names for promises are \textbf{futures}, \textbf{tickets} and \textbf{continuations}.
 \end{itemize}
+\end{itemize}
+
+\subsubsubsection{Conclusion}
+
+RPC is a familiar paradigm as it closely resembles regular procedure calls. It is one fot he fundamendal basics of distributed programming. It does have limitations, as failures have to be handled by clients and these failures are unpredictable and untraceable. It has no support for transactions and it only uses one-to-one communcation.
 
 \newpage
 

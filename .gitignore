@@ -6,6 +6,7 @@ rev
 *.pdf
 *.synctex.gz
 *.toc
+*.out
 
 % Latexmk
 *.fls
@@ -14,3 +15,4 @@ rev
 % BaKoMa TeX Word
 *.tex.Backup-*
 *.ddf
+*.bb

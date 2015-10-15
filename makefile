@@ -11,4 +11,4 @@ ${OUTPUT_NAME}.pdf:
 	mv ${INPUT_NAME}.pdf ${OUTPUT_NAME}.pdf
 
 clean:
-	rm -f *.pdf *.aux *.log *.toc *.synctex.gz *.fls *.fdb_latexmk rev
+	rm -f *.pdf *.aux *.log *.toc *.synctex.gz *.fls *.fdb_latexmk *.out rev
