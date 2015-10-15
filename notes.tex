@@ -314,7 +314,7 @@ A \textbf{message queue} is usually implemented on the server side. One or more 
 
 \subsubsection{Remote procedure calls}
 
-In a traditional application, there is a main program which calls procedures. In a distributed system, the same effect can be achieved by grouping the procedures into servers and having the main programs act as clients. When a client invokes a procedure on a server remotely, it will act like a conventional procedure call. This is achieved by \textbf{RPC middleware} thought he use of \textbf{stubs}. These stubs are interfaces which represent procedures on the server as they would appear in a local environment, allowing the client to call them and essentially be unaware of how they are implemented, which in this case would be using a messaging system to call them remotely.
+In a traditional application, there is a main program which calls procedures. In a distributed system, the same effect can be achieved by grouping the procedures into servers and having the main programs act as clients. When a client invokes a procedure on a server remotely, it will act like a conventional procedure call. This is achieved by \textbf{RPC middleware} though the use of \textbf{stubs}. These stubs are interfaces which represent procedures on the server as they would appear in a local environment, allowing the client to call them and essentially be unaware of how they are implemented, which in this case would be using a messaging system to call them remotely.
 
 To understand remote procedure calls, it is important to note that there is a stub at the client side and a stub at the server side. The client stub allows the client to call procedures transparently, where as the stub on the server side communicates client requests back and forth between the actual implementation on the server. An RPC invocation sequence may look as follows:
 
@@ -332,7 +332,23 @@ To understand remote procedure calls, it is important to note that there is a st
 \item The client stub returns the result through the method interface called by the application.
 \end{enumerate}
 
-In this system, the code of both the client and the server are completely independent from the actual communication system. Remote procedure invocation is transparent to the client, makign it unaware that the method is executed remotely. An \textbf{Interface Definition Language (IDL)} is used as a language independent of that used for the client and server to generate the stubs, allowing for clients and servers written in different languages to work compatibly.
+In this system, the code of both the client and the server are completely independent from the actual communication system. Remote procedure invocation is transparent to the client, makign it unaware that the method is executed remotely. An \textbf{Interface Definition Language (IDL)} is used as a language independent of those used for the client and server to generate the stubs, allowing for clients and servers written in different languages to work compatibly.
+
+\subsubsubsection{Design issues}
+
+\begin{itemize}
+\item RPC can be implemented in different ways, generally two classes stand out. There's a set of RPC systems which are integrated with a particular programming language. This includes Argus (a programming language which extends the CLU language) and Arjuna (a C++ library). Another set is those with RPC based on a special IDL. This includes Sun RPC, ANSA RPC and OSF/DCE.
+\item An IDL describes operation signatures. Interface compiler must be provided to generate client and server stubs in various languages. This allows for an abstraction of heterogeneity accross various platforms.
+\item When handling exceptions in an RCP, failures can not be hidden. A failure can be caused due to network or server failure, but the client can not distinguish between the two. Failures can be supported with language specific implementations, using return codes of functions to signal that a failure has occurred or by sing an extension provided by the IDL.
+\item There's four ways of handling RPC delivery guarantees.
+\begin{enumerate}
+\item \textbf{Maybe}: An RPC call may or may not be executed by the server. This happens when there's no fault handling.
+\item \textbf{At-least-once}: An RPC call returns either the result or an error that no result was received. This can be achieved by re-executing the request if it is lost in transit.
+\item \textbf{At-most-once}: An RPC call returns either the result, ensuring the call executed just once, or an error that indicates there was no result and either it execute once or not at all. This can be achieved by retransmitting the reply from the server and filtering duplicate requests.
+\item \textbf{Exactly-once}: An RPC call returns the correct result, ensuring that it was executed at least once and only once. This is very difficult, if not impossible to achieve as failures are always possible.
+\end{enumerate}
+\item Transparency is an important concept in RPC, one usually aims to make remote calls as similar to local calls as possible. RPC is however more vulnerable to failure, which should not be hidden. Some other difficulties include that calling instructions has to happen very differently and that there is no shared memory between the client and server. There has to be a balance between programming convenience and true transparency.
+\end{itemize}
 
 \newpage
 
