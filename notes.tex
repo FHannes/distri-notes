@@ -381,8 +381,6 @@ Some examples include:
 \item .NET Remoting
 \end{itemize}
 
-\subsubsection{Distributed object systems}
-
 \subsubsection{Distributed object model}
 
 Distributed objects make it possible to adopt an \textbf{object-oriented programming (OOP)} model for the development of distributed systems. \textbf{Encapsulation} which is inherent to OOP objects is well suited for distributed programming as it allows (remote) services to easily be represented as an object. It is important to use \textbf{data abstraction} to provide a clean separation between an object (usually represented by an interface) and its implementation (on the system where the objects resides locally). When the interface is called by the local process, which treats the objects as if it were local (\textit{access transparency}), the back-end implementation will use remote invocation to execute the call on the system where he actual object is located; thus providing \textit{location transparency}.
