@@ -84,7 +84,7 @@
 
 A \textbf{distributed system} is a system which consists out of hardware and/or software components, a network which provides a connection between those components and communication to provide coordination of the components by passing messages.
 
-\textbf{Concurrency} can be a major issue for distributed systems as it is very difficult to synchronize events across the various components. One of the reasons for this is the lack of a \textbf{global clock}. As such, time might be different for different components of the system. Another hurdle are \textbf{independent failures} of these system components. In a distributed environment, a system will never completely fail, but each component of the system can fail independently. The system van handle these failures in various ways. Full availability of a distributed system can never be guaranteed.
+\textbf{Concurrency} can be a major issue for distributed systems as it is very difficult to synchronize events across the various components. One of the reasons for this is the lack of a \textbf{global clock}. As such, time might be different for different components of the system. Another hurdle are \textbf{independent failures} of these system components. In a distributed environment, a system will never completely fail, but each component of the system can fail independently. The system can handle these failures in various ways. Full availability of a distributed system can never be guaranteed.
 
 A \textbf{distributed algorithm} is a collection of cooperating algorithms which communicate through message passing. An example algorithm is mutual exclusion, which prevents different processes from using the same resource simultaneously.
 
@@ -110,7 +110,7 @@ Some of the challenges with mobile computing include automatically reconfiguring
 
 There are various commercial applications of distributed systems, each with its own challenges. An example of e-commerce, more specifically home banking, has the challenge of correctly completing transactions. If a user transfers money to another person, they want this to happen just once and correctly. This means that the operation has to be \textbf{idempotent}. If it is performed twice, it should have the same result as if it were only performed once. In the case of the bank, this means that a specific amount shouldn't be transferred by the operation, but rather that the operation should increase the amount of the target account before the operation with a certain value, to achieve a specific new balance. That way, even if the operation is executed twice, the end-result will still be the same.
 
-For health care, global access to patient information is a goal which is being worked towards. The idea behind this is that patient information can be shared between hospitals in the same country or even across borders if the patient allows it, as there are privacy concerns involved. Mechanisms must also be in place to give medical professionals the ability to overrule these mechanisms if a patient is incapable of making the decision that this data can be shared.
+For health care, global access to patient information is a goal which is being worked towards. The idea behind this is that patient information can be shared between hospitals in the same country or even across borders if the patient allows it, as there are privacy concerns involved. Mechanisms must also be put in place to give medical professionals the ability to overrule these permissions if a patient is incapable of making the decision that this data can be shared.
 
 Audio and video calling is an example for telecommunication, where systems must handle real-time traffic. The data must reach its destination fast enough to allow for smooth, uninterrupted communication.
 
@@ -366,6 +366,33 @@ In this system, the code of both the client and the server are completely indepe
 \subsubsubsection{Conclusion}
 
 RPC is a familiar paradigm as it closely resembles regular procedure calls. It is one fot he fundamendal basics of distributed programming. It does have limitations, as failures have to be handled by clients and these failures are unpredictable and untraceable. It has no support for transactions and it only uses one-to-one communcation.
+
+An \textbf{object request broker} (ORB) is middleware which allows calls to be made to remote objects using remote procedure calls (RPC). It provides location transparency for handling these remote objects.
+
+Some examples include:
+\begin{itemize}
+\item CORBA (Common Object Request Broker Architecture)
+\item DCOM (Distributed Component Object Model)
+\item Java RMI (Remote Method Invocation)
+\item .NET Remoting
+\end{itemize}
+
+\subsubsection{Distributed Object Systems}
+
+Distributed objects make it possible to adopt an \textbf{object-oriented programming (OOP)} model for the development of distributed systems. \textbf{Encapsulation} which is inherent to OOP objects is well suited for distributed programming as it allows (remote) services to easily be represented as an object. It is important to use \textbf{data abstraction} to provide a clean separation between an object (usually represented by an interface) and its implementation (on the system where the objects resides locally). When the interface is called by the local process, which treats the objects as if it were local (\textit{access transparency}), the back-end implementation will use remote invocation to execute the call on the system where he actual object is located; thus providing \textit{location transparency}.
+
+Distributed objects must respect all aspects of OOP. As mentioned above, they must provide location and access transparency. It must be possible to use them as parameter and return values in methods and also to subclass them (inheritance) and invoke them synchronously. There are exceptions to these rules however:
+
+\begin{itemize}
+\item Java RMI invocation uses 
+\end{itemize}
+
+
+\newpage
+
+\section{Distributed File Systems}
+
+
 
 \newpage
 
