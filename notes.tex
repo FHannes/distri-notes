@@ -195,7 +195,7 @@ Partial failures are difficult to handle, but several techniques are available:
 \item \textbf{Masking failures}: A system can mask a failure by attempting to continue operating after a failure has occurred. If a message has been sent to a node in a distributed system which has failed, this message may be retransmitted to be handled by a different node instead, if no reply was received.
 \item \textbf{Tolerating failures}: A failure may be tolerated, which means that it is deemed acceptable for the failure to occur, if it does not occur too frequently. This may not be possible for some critical system, but can often be seen on websites, when it states that a service is not currently available.
 \item \textbf{Recovery from failures}: A system may recover from a failure. An example of this would be saving the state of execution, which is then restored later on to resume the execution.
-\item \textbf{Redundancy}: Redundancy can be applied to handle failures as well. This si achieved by replicating services. If a service fails, one of the redundant replications can take over, preventing the system from failing.
+\item \textbf{Redundancy}: Redundancy can be applied to handle failures as well. This is achieved by replicating services. If a service fails, one of the redundant replications can take over, preventing the system from failing.
 \end{itemize}
 
 \subsubsection{Concurrency}
@@ -230,7 +230,7 @@ A \textbf{distribution service} in middleware is part of the larger middleware s
 
 \subsubsection{Data representation}
 
-A problem when working with a heterogenous environment is that different underlying systems may represent program data in different ways. This makes it unclear how this data should be mapped onto a message, to ensure that other systems are able to interpret it correctly. The problem can be resolved by converting the data, which can be done using various approaches.
+A problem when working with a heterogeneous environment is that different underlying systems may represent program data in different ways. This makes it unclear how this data should be mapped onto a message, to ensure that other systems are able to interpret it correctly. The problem can be resolved by converting the data, which can be done using various approaches.
 
 \begin{itemize}
 \item A specific format for transmission can be agreed upon. Data can be converted from the original format on the source system to the intermediary transmission format and converted to the format of the target system upon receival. All machines in the system which communicate must of course be aware of these format specifications. Examples of this are \textit{Sun XDR} and \textit{COBRA CDR}.
@@ -305,9 +305,9 @@ UDP and TCP are general purpose communication protocols which only offer low lev
 
 \subsubsection{Request-reply protocols}
 
-Request-reply protocols refer to a pattern imposed on an underlying messaging system to allow communication between a client/server setting. A client will send a request to a client application using a |doOperation| method, which will then wait for a reply and return the answer when it is received. The server can call a |getRequest| method to (wait for and) receive a message and then use a |sendReply| method to send a reply back to the client after the request has been executed. In this system, acknowledgement messages are redundant as replies are used instead, a connection structure is not nessecary and there is no need for flow control.
+Request-reply protocols refer to a pattern imposed on an underlying messaging system to allow communication between a client/server setting. A client will send a request to a client application using a |doOperation| method, which will then wait for a reply and return the answer when it is received. The server can call a |getRequest| method to (wait for and) receive a message and then use a |sendReply| method to send a reply back to the client after the request has been executed. In this system, acknowledgement messages are redundant as replies are used instead, a connection structure is not necessary and there is no need for flow control.
 
-Because of the way request-reply protocols work, the reliability that comes with the TCP protocol causes a lot of overhead, as acknowledgements are redundant, the size of data packets is limited and communication occurs sporadically. This means that the TCP connection concept and streams or flow control are not needed. UDP can be used instead to reduce the overhead and improve efficiency, but UDP does have issues with reliability and may require requests or replies to be resent.
+Because of the way request-reply protocols work, the reliability that comes with the TCP protocol causes a lot of overhead, as acknowledgments are redundant, the size of data packets is limited and communication occurs sporadically. This means that the TCP connection concept and streams or flow control are not needed. UDP can be used instead to reduce the overhead and improve efficiency, but UDP does have issues with reliability and may require requests or replies to be resent.
 
 \subsubsubsection{Case study: HTTP}
 
@@ -339,13 +339,13 @@ To understand remote procedure calls, it is important to note that there is a st
 \item The client stub returns the result through the method interface called by the application.
 \end{enumerate}
 
-In this system, the code of both the client and the server are completely independent from the actual communication system. Remote procedure invocation is transparent to the client, makign it unaware that the method is executed remotely. An \textbf{Interface Definition Language (IDL)} is used as a language independent of those used for the client and server to generate the stubs, allowing for clients and servers written in different languages to work compatibly.
+In this system, the code of both the client and the server are completely independent from the actual communication system. Remote procedure invocation is transparent to the client, making it unaware that the method is executed remotely. An \textbf{Interface Definition Language (IDL)} is used as a language independent of those used for the client and server to generate the stubs, allowing for clients and servers written in different languages to work compatibly.
 
 \subsubsubsection{Design issues}
 
 \begin{itemize}
 \item RPC can be implemented in different ways, generally two classes stand out. There's a set of RPC systems which are integrated with a particular programming language. This includes Argus (a programming language which extends the CLU language) and Arjuna (a C++ library). Another set is those with RPC based on a special IDL. This includes Sun RPC, ANSA RPC and OSF/DCE.
-\item An IDL describes operation signatures. Interface compiler must be provided to generate client and server stubs in various languages. This allows for an abstraction of heterogeneity accross various platforms.
+\item An IDL describes operation signatures. Interface compiler must be provided to generate client and server stubs in various languages. This allows for an abstraction of heterogeneity across various platforms.
 \item When handling exceptions in an RCP, failures can not be hidden. A failure can be caused due to network or server failure, but the client can not distinguish between the two. Failures can be supported with language specific implementations, using return codes of functions to signal that a failure has occurred or by sing an extension provided by the IDL.
 \item There's four ways of handling RPC delivery guarantees.
 \begin{enumerate}
@@ -355,17 +355,19 @@ In this system, the code of both the client and the server are completely indepe
 \item \textbf{Exactly-once}: An RPC call returns the correct result, ensuring that it was executed at least once and only once. This is very difficult, if not impossible to achieve as failures are always possible.
 \end{enumerate}
 \item Transparency is an important concept in RPC; one usually aims to make remote calls as similar to local calls as possible. RPC is however more vulnerable to failure, which should not be hidden. Some other difficulties include that calling instructions has to happen very differently and that there is no shared memory between the client and server. There has to be a balance between programming convenience and true transparency.
-\item The interface compiler is responsible for generating the client stub procedure, server stub procedure, generating code for marshalling and unmarshalling of the arguments for each type and generating the header for the server procedure. A binder interface is provided to link a client to a server at execution time. A server can register itself to receive RPC calls with the binder using a |register| method and a client can look up a service using a |lookup| mehod. The binder itself is either located at a well known host address, the OS could be responsible for the bindings or the client could broadcast a message to contact a binder on the network.
-\item \textbf{Asynchronous RPC} can be used as an alternative to synchronous RPC when the system has to handle many requests for amsll amounts of information that requires limited processing or when parallel requests have to be sent to several servers. this is useful because servers waste a lot of time idling in between RPC calls to wait for a new call. This could further be optimized by buffering requests at the client until a server is available to handle it, or by having a client resume execution if no reply is needed for an RPC call.
+\item The interface compiler is responsible for generating the client stub procedure, server stub procedure, generating code for marshalling and unmarshalling of the arguments for each type and generating the header for the server procedure. A binder interface is provided to link a client to a server at execution time. A server can register itself to receive RPC calls with the binder using a |register| method and a client can look up a service using a |lookup| method. The binder itself is either located at a well known host address, the OS could be responsible for the bindings or the client could broadcast a message to contact a binder on the network.
+\item \textbf{Asynchronous RPC} can be used as an alternative to synchronous RPC when the system has to handle many requests for small amounts of information that requires limited processing or when parallel requests have to be sent to several servers. this is useful because servers waste a lot of time idling in between RPC calls to wait for a new call. This could further be optimized by buffering requests at the client until a server is available to handle it, or by having a client resume execution if no reply is needed for an RPC call.
 \begin{itemize}
 \item \textbf{Call streams} can be implemented as a connection oriented RPC system that mixes synchronous and asynchronous calls. A stream allows the system to preserve the order of the calls.
-\item \textbf{Promises} allow clients to resume other executions and retrieve the results of RPC calls later. A promise is created at the time of the call and stored the results of the call once received. A client can invoke methods on a promise object, to |get| a result, |await| a result or check if a result is available. Commonly used altenative names for promises are \textbf{futures}, \textbf{tickets} and \textbf{continuations}.
+\item \textbf{Promises} allow clients to resume other executions and retrieve the results of RPC calls later. A promise is created at the time of the call and stored the results of the call once received. A client can invoke methods on a promise object, to |get| a result, |await| a result or check if a result is available. Commonly used alternative names for promises are \textbf{futures}, \textbf{tickets} and \textbf{continuations}.
 \end{itemize}
 \end{itemize}
 
 \subsubsubsection{Conclusion}
 
-RPC is a familiar paradigm as it closely resembles regular procedure calls. It is one fot he fundamendal basics of distributed programming. It does have limitations, as failures have to be handled by clients and these failures are unpredictable and untraceable. It has no support for transactions and it only uses one-to-one communcation.
+RPC is a familiar paradigm as it closely resembles regular procedure calls. It is one of the fundamental basics of distributed programming. It does have limitations, as failures have to be handled by clients and these failures are unpredictable and untraceable. It has no support for transactions and it only uses one-to-one communication.
+
+\subsection{Object Request Brokers}
 
 An \textbf{object request broker} (ORB) is middleware which allows calls to be made to remote objects using remote procedure calls (RPC). It provides location transparency for handling these remote objects.
 
@@ -381,18 +383,7 @@ Some examples include:
 
 Distributed objects make it possible to adopt an \textbf{object-oriented programming (OOP)} model for the development of distributed systems. \textbf{Encapsulation} which is inherent to OOP objects is well suited for distributed programming as it allows (remote) services to easily be represented as an object. It is important to use \textbf{data abstraction} to provide a clean separation between an object (usually represented by an interface) and its implementation (on the system where the objects resides locally). When the interface is called by the local process, which treats the objects as if it were local (\textit{access transparency}), the back-end implementation will use remote invocation to execute the call on the system where he actual object is located; thus providing \textit{location transparency}.
 
-Distributed objects must respect all aspects of OOP. As mentioned above, they must provide location and access transparency. It must be possible to use them as parameter and return values in methods and also to subclass them (inheritance) and invoke them synchronously. There are exceptions to these rules however:
-
-\begin{itemize}
-\item Java RMI invocation uses 
-\end{itemize}
-
-
-\newpage
-
-\section{Distributed File Systems}
-
-
+Distributed objects must respect all aspects of OOP. As mentioned above, they must provide location and access transparency. It must be possible to use them as parameter and return values in methods and also to subclass them (inheritance) and invoke them synchronously.
 
 \newpage
 
