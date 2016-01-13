@@ -343,6 +343,8 @@ In this system, the code of both the client and the server are completely indepe
 
 \subsubsubsection{Design issues}
 
+\label{sec:delivery_guarantees}
+
 \begin{itemize}
 \item RPC can be implemented in different ways, generally two classes stand out. There's a set of RPC systems which are integrated with a particular programming language. This includes Argus (a programming language which extends the CLU language) and Arjuna (a C++ library). Another set is those with RPC based on a special IDL. This includes Sun RPC, ANSA RPC and OSF/DCE.
 \item An IDL describes operation signatures. Interface compiler must be provided to generate client and server stubs in various languages. This allows for an abstraction of heterogeneity across various platforms.
@@ -367,7 +369,7 @@ In this system, the code of both the client and the server are completely indepe
 
 RPC is a familiar paradigm as it closely resembles regular procedure calls. It is one of the fundamental basics of distributed programming. It does have limitations, as failures have to be handled by clients and these failures are unpredictable and untraceable. It has no support for transactions and it only uses one-to-one communication.
 
-\subsection{Object Request Brokers}
+\subsection{Object request brokers}
 
 An \textbf{object request broker} (ORB) is middleware which allows calls to be made to remote objects using remote procedure calls (RPC). It provides location transparency for handling these remote objects.
 
@@ -379,11 +381,25 @@ Some examples include:
 \item .NET Remoting
 \end{itemize}
 
-\subsubsection{Distributed Object Systems}
+\subsubsection{Distributed object systems}
+
+\subsubsection{Distributed object model}
 
 Distributed objects make it possible to adopt an \textbf{object-oriented programming (OOP)} model for the development of distributed systems. \textbf{Encapsulation} which is inherent to OOP objects is well suited for distributed programming as it allows (remote) services to easily be represented as an object. It is important to use \textbf{data abstraction} to provide a clean separation between an object (usually represented by an interface) and its implementation (on the system where the objects resides locally). When the interface is called by the local process, which treats the objects as if it were local (\textit{access transparency}), the back-end implementation will use remote invocation to execute the call on the system where he actual object is located; thus providing \textit{location transparency}.
 
-Distributed objects must respect all aspects of OOP. As mentioned above, they must provide location and access transparency. It must be possible to use them as parameter and return values in methods and also to subclass them (inheritance) and invoke them synchronously.
+Distributed objects must respect all aspects of OOP. As mentioned above, they must provide location and access transparency. It must be possible to use them as parameter and return values in methods and also to subclass them (inheritance) and invoke them synchronously. There are exceptions to these rules however:
+
+\begin{itemize}
+\item Java RMI uses \textit{at-most-once} delivery and CORBA uses \textit{at-most-once} or \textit{maybe} delivery. This contrary to \textit{exactly-once}, which would be expected when calls are made locally. (See section \ref{sec:delivery_guarantees})
+\item Distributed objects are passed by reference, but unlike local objects this does not mean they are passed by pointer, rather an object representing the remote objects holds a reference to that remote object which can uniquely identify it.
+\item Additional exceptions have to be added to address a wide variety of possible problems that can occur due to the distributed nature of the system as distribution itself is not transparent.
+\item Remote objects can not truly be concurrently accessed as the calls have to pass through a networking socket which has to be read by the remote process as a stream of sequential data packets.
+\item The use of calling objects over a network rather than calling them locally also incurs a performance penalty due to the latency of the network communication.
+\end{itemize}
+
+A distributed object system typically consists of a client process, a server process and a name service. The server hosts remote objects and waits for incoming calls. The client obtains references to remote object son the server which it can then proceed to call when needed. The name service is used to help clients locate remote objects based on their references. The server will register its remote objects with the name service. The client can look these up by name and will receive a reference to the remote object on the server.
+
+\textbf{Reference counting} is used to implement \textbf{distributed garbage collection} in cooperation with the local garbage collectors. A \textbf{leasing}-based system allows for fault tolerance by leasing objects to clients for a period of time. This allows the garbage collector to clean objects from the memory that might otherwise be stuck if the client has crashed, but did count towards the total amount of references for an object. The client will periodically renew the license to ensure that the object does not expire before it is done using it.
 
 \newpage
 
